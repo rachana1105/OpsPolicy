@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    opspolicy_policy_simulation:
+      name: OpsPolicy Policy Simulation
+      tasks:
+        - task_key: load_simulation_request
+          notebook_task:
+            notebook_path: ../notebooks/03_run_policy_simulation.py
+        - task_key: evaluate_historical_requests
+          depends_on:
+            - task_key: load_simulation_request
+          notebook_task:
+            notebook_path: ../notebooks/03_run_policy_simulation.py
+        - task_key: calculate_impact
+          depends_on:
+            - task_key: evaluate_historical_requests
+          notebook_task:
+            notebook_path: ../notebooks/03_run_policy_simulation.py
+        - task_key: publish_simulation_result
+          depends_on:
+            - task_key: calculate_impact
+          notebook_task:
+            notebook_path: ../notebooks/04_publish_results.py
+      # On-demand only; triggered by the backend when a simulation is requested.

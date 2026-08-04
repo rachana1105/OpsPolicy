@@ -1,0 +1,27 @@
+resources:
+  jobs:
+    opspolicy_compliance_refresh:
+      name: OpsPolicy Compliance Refresh
+      tasks:
+        - task_key: ingest_exports
+          notebook_task:
+            notebook_path: ../notebooks/01_ingest_operational_data.py
+        - task_key: clean_and_enrich
+          depends_on:
+            - task_key: ingest_exports
+          notebook_task:
+            notebook_path: ../notebooks/02_build_compliance_metrics.py
+        - task_key: build_compliance_metrics
+          depends_on:
+            - task_key: clean_and_enrich
+          notebook_task:
+            notebook_path: ../notebooks/02_build_compliance_metrics.py
+        - task_key: publish_gold_tables
+          depends_on:
+            - task_key: build_compliance_metrics
+          notebook_task:
+            notebook_path: ../notebooks/04_publish_results.py
+      schedule:
+        quartz_cron_expression: "0 0 */6 * * ?"
+        timezone_id: Asia/Kolkata
+        pause_status: PAUSED
